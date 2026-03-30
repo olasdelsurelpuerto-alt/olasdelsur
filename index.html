@@ -121,6 +121,12 @@
       0%, 100% { transform: translateY(0); }
       50%       { transform: translateY(-4px); }
     }
+    @keyframes audio-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.6); transform: scale(1); }
+      70%  { box-shadow: 0 0 0 15px rgba(255, 107, 53, 0); transform: scale(1.03); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); transform: scale(1); }
+    }
+
     .hero-audio-btn {
       display: inline-flex;
       align-items: center;
@@ -135,15 +141,23 @@
       letter-spacing: 0.05em;
       text-transform: uppercase;
       box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: audio-pulse 3s infinite ease-out;
+    }
+
+    .hero-audio-btn.fading {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.9);
+      pointer-events: none;
     }
 
     .hero-audio-btn:hover {
       transform: translateY(-2px) scale(1.05);
       background: linear-gradient(135deg, var(--coral2), var(--coral));
       box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+      animation: none;
     }
 
     .hero-checkin-btn {
@@ -1237,7 +1251,7 @@
   <!-- Brand content -->
   <div class="hero-content">
     <div class="hero-badge-wrap">
-      <a href="javascript:void(0)" onclick="startCinematicVideo()" class="hero-audio-btn" style="margin-bottom: 8px;">
+      <a href="javascript:void(0)" onclick="startAtmosphereAudioOnce(this)" class="hero-audio-btn" style="margin-bottom: 8px;">
         🔊 <span data-lang="es">Activar Audio</span><span data-lang="en">Activate Audio</span><span data-lang="fr">Activer l'Audio</span><span data-lang="de">Audio aktivieren</span><span data-lang="it">Attiva Audio</span>
       </a>
       <a href="https://forms.gle/QbenMfacF8cNuoDbA" target="_blank" class="hero-checkin-btn" style="margin-bottom: 24px;">
@@ -1419,6 +1433,10 @@
           atmPlayer.setVolume(100);
           atmPlayer.playVideo();
         }
+      }
+      function startAtmosphereAudioOnce(btn) {
+        startCinematicVideo();
+        if (btn) btn.classList.add('fading');
       }
     </script>
     <div class="atmosphere-bar">
