@@ -121,7 +121,33 @@
       0%, 100% { transform: translateY(0); }
       50%       { transform: translateY(-4px); }
     }
+    .hero-audio-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, var(--coral), var(--terracotta));
+      color: white;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-audio-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: linear-gradient(135deg, var(--coral2), var(--coral));
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+    }
+
     .hero-checkin-btn {
+
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -1211,6 +1237,9 @@
   <!-- Brand content -->
   <div class="hero-content">
     <div class="hero-badge-wrap">
+      <a href="javascript:void(0)" onclick="startCinematicVideo()" class="hero-audio-btn" style="margin-bottom: 8px;">
+        🔊 <span data-lang="es">Activar Audio</span><span data-lang="en">Activate Audio</span><span data-lang="fr">Activer l'Audio</span><span data-lang="de">Audio aktivieren</span><span data-lang="it">Attiva Audio</span>
+      </a>
       <a href="https://forms.gle/QbenMfacF8cNuoDbA" target="_blank" class="hero-checkin-btn" style="margin-bottom: 24px;">
         🗝️ <span data-lang="es">Check-in Online</span><span data-lang="en">Online Check-in</span><span data-lang="fr">Check-in en ligne</span><span data-lang="de">Online Check-in</span><span data-lang="it">Check-in Online</span> <span class="hero-checkin-arrow">→</span>
       </a>
