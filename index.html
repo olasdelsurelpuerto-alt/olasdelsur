@@ -17,7 +17,7 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
 
 </head>
 <body>
@@ -183,9 +183,9 @@
       <div class="video-overlay" id="videoOverlay" onclick="startCinematicVideo()">
         <div class="red-play-btn"></div>
       </div>
-      <!-- End overlay: logo OlasDelSur when video ends -->
+      <!-- End overlay: scenic image when video is about to end -->
       <div class="video-end-overlay" id="videoEndOverlay">
-        <img src="logo.png" alt="OlasDelSur" class="video-end-logo">
+        <div class="video-end-scenic"></div>
       </div>
     </div>
     <div class="atmosphere-bar">
@@ -321,6 +321,6 @@
 
 <!-- ══════════ JS ══════════ -->
 <script src="js/data.js?v=4"></script>
-<script src="js/main.js?v=14"></script>
+<script src="js/main.js?v=15"></script>
 </body>
 </html>

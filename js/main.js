@@ -26,13 +26,20 @@ function onYouTubeIframeAPIReady() {
                 var endOverlay = document.getElementById('videoEndOverlay');
                 
                 if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
-                    // Fade out the start overlay after 4s (YouTube branding gone by then)
+                    // Fade out the start overlay after 2.5s (1.5s earlier than previous 4s)
                     setTimeout(function() {
                         if (startOverlay) startOverlay.classList.add('hidden');
-                    }, 4000);
-                } else if (e.data === YT.PlayerState.ENDED) {
-                    // Show end overlay with logo
-                    if (endOverlay) endOverlay.classList.add('visible');
+                    }, 2500);
+
+                    // Poll for the end of the video to show end overlay 1s early
+                    var checkEndInterval = setInterval(function() {
+                        var currentTime = e.target.getCurrentTime();
+                        var duration = e.target.getDuration();
+                        if (duration > 0 && (duration - currentTime) <= 1.2) { // 1.2s to ensure it's visible before black
+                            if (endOverlay) endOverlay.classList.add('visible');
+                            clearInterval(checkEndInterval);
+                        }
+                    }, 200);
                 }
             }
         }
