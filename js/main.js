@@ -26,10 +26,10 @@ function onYouTubeIframeAPIReady() {
                 var endOverlay = document.getElementById('videoEndOverlay');
                 
                 if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
-                    // Fade out the start overlay after a brief delay
+                    // Fade out the start overlay after 4s (YouTube branding gone by then)
                     setTimeout(function() {
                         if (startOverlay) startOverlay.classList.add('hidden');
-                    }, 800);
+                    }, 4000);
                 } else if (e.data === YT.PlayerState.ENDED) {
                     // Show end overlay with logo
                     if (endOverlay) endOverlay.classList.add('visible');

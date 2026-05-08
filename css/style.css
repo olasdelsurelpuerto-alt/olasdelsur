@@ -1138,7 +1138,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('assets/promo_hero_drone_view_1774801703561.png');
+      background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('../assets/promo_hero_drone_view_1774801703561.png');
       background-size: cover;
       background-position: center;
       display: flex;
@@ -1157,7 +1157,7 @@
     }
 
     .video-overlay.ended {
-      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('assets/promo_beachfront_evening_vibes_1774801764370.png');
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes_1774801764370.png');
     }
 
     /* Invisible shield to block clicks on YouTube iframe */
