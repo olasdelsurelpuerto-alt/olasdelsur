@@ -26,10 +26,10 @@ function onYouTubeIframeAPIReady() {
                 var endOverlay = document.getElementById('videoEndOverlay');
                 
                 if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
-                    // Fade out the start overlay after 3.5s
+                    // Fade out the start overlay after 4s
                     setTimeout(function() {
                         if (startOverlay) startOverlay.classList.add('hidden');
-                    }, 3500);
+                    }, 4000);
 
                     // Poll for the end of the video to show end overlay 1s early
                     var checkEndInterval = setInterval(function() {
