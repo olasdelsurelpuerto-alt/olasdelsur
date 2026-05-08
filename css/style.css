@@ -1153,10 +1153,49 @@
     .video-overlay.hidden {
       opacity: 0;
       visibility: hidden;
+      pointer-events: none;
     }
 
     .video-overlay.ended {
       background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('assets/promo_beachfront_evening_vibes_1774801764370.png');
+    }
+
+    /* Invisible shield to block clicks on YouTube iframe */
+    .atm-video-shield {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 15;
+      pointer-events: none;
+      border-radius: 12px;
+    }
+    .atm-video-shield.active {
+      pointer-events: auto; /* Blocks all clicks once video starts */
+      cursor: default;
+    }
+
+    /* End overlay with OlasDelSur logo */
+    .video-end-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 1.2s ease, visibility 1.2s;
+      border-radius: 12px;
+    }
+    .video-end-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .video-end-logo {
+      max-width: 200px;
+      filter: drop-shadow(0 0 30px rgba(255,107,53,0.4));
     }
 
     .red-play-btn {

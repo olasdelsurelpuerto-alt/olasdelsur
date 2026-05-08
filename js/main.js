@@ -4,14 +4,17 @@ tag.src = 'https://www.youtube.com/iframe_api';
 document.head.appendChild(tag);
 
 var atmPlayer;
+var videoHasStarted = false;
+
 function onYouTubeIframeAPIReady() {
     atmPlayer = new YT.Player('atmYTPlayer', {
         videoId: '-zQbS5or5-k',
         host: 'https://www.youtube-nocookie.com',
         playerVars: {
-            controls: 1, rel: 0, modestbranding: 1,
+            controls: 0, rel: 0, modestbranding: 1,
             iv_load_policy: 3, playsinline: 1,
-            autoplay: 0
+            autoplay: 0, disablekb: 1, fs: 0,
+            showinfo: 0
         },
         events: {
             onReady: function(e) {
@@ -19,16 +22,17 @@ function onYouTubeIframeAPIReady() {
                 e.target.mute();
             },
             onStateChange: function(e) {
-                const overlay = document.getElementById('videoOverlay');
-                if (e.data === YT.PlayerState.PLAYING) {
+                var startOverlay = document.getElementById('videoOverlay');
+                var endOverlay = document.getElementById('videoEndOverlay');
+                
+                if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
+                    // Fade out the start overlay after a brief delay
                     setTimeout(function() {
-                        if (overlay) overlay.classList.add('hidden');
-                    }, 1500);
+                        if (startOverlay) startOverlay.classList.add('hidden');
+                    }, 800);
                 } else if (e.data === YT.PlayerState.ENDED) {
-                    if (overlay) {
-                        overlay.classList.add('ended');
-                        overlay.classList.remove('hidden');
-                    }
+                    // Show end overlay with logo
+                    if (endOverlay) endOverlay.classList.add('visible');
                 }
             }
         }
@@ -36,8 +40,13 @@ function onYouTubeIframeAPIReady() {
 }
 
 function startCinematicVideo() {
-    const overlay = document.getElementById('videoOverlay');
-    if (overlay) overlay.classList.remove('ended');
+    if (videoHasStarted) return; // Block restart
+    videoHasStarted = true;
+    
+    // Show the shield to block all clicks
+    var shield = document.getElementById('videoShield');
+    if (shield) shield.classList.add('active');
+    
     if (atmPlayer && atmPlayer.playVideo) {
         atmPlayer.unMute();
         atmPlayer.setVolume(100);
