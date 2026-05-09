@@ -113,7 +113,23 @@ function renderMarkers() {
 
 function renderPopup(p) {
     const lang = window._olasLang || 'es';
-    const desc = p['desc_' + lang] || p.desc;
+    
+    // Find more complete data in poiData
+    const pData = typeof poiData !== 'undefined' ? poiData.find(x => x.id === p.id) : null;
+    
+    // Title translation
+    let title = p.title;
+    if (pData) {
+        title = pData['name_' + lang] || pData.name || p.title;
+    }
+
+    // Description translation
+    let desc = p.desc;
+    if (pData) {
+        desc = pData['desc_' + lang] || pData.desc_es || p.desc;
+    } else {
+        desc = p['desc_' + lang] || p.desc;
+    }
     
     const btnLabels = {
         es: "🚶 Cómo llegar",
@@ -127,7 +143,7 @@ function renderPopup(p) {
     
     const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;"><a href="${mapsLink}" target="_blank" style="display:inline-block;background:var(--coral, #E8501A);color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;">${label}</a></div>`;
 
-    return `<div style="font-family:sans-serif;padding:5px"><strong>${p.title}</strong><div style="margin-top:6px;font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
+    return `<div style="font-family:sans-serif;padding:5px"><strong>${title}</strong><div style="margin-top:6px;font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
 }
 
 function highlightCard(id) {
