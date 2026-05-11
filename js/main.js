@@ -313,7 +313,7 @@ function renderMarkers() {
         const isHome = p.category === 'home';
         const color = categoryColors[p.category] || '#08D9D6';
         const el = makeMarkerEl(p.icon, color, isHome);
-        const popup = new maplibregl.Popup({ offset: [0, isHome ? -28 : -22], maxWidth: '280px' });
+        const popup = new maplibregl.Popup({ offset: [0, isHome ? -28 : -22], maxWidth: '230px' });
         popup.on('open', () => popup.setHTML(renderPopup(p)));
         const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
             .setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
@@ -362,7 +362,7 @@ function renderPopup(p) {
     };
     const label = btnLabels[lang] || btnLabels.es;
     const mapsLink = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${p.lat},${p.lng}&travelmode=walking`;
-    const btnStyle = `display:inline-block;color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;`;
+    const btnStyle = `display:inline-block;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.78rem;`;
     const scheduleBtn = p.id === 'catamaran' ? `<a href="https://www.google.com/maps/place/Terminal+Mar%C3%ADtima+El+Puerto/@36.5936483,-6.2268356,18z/data=!4m8!3m7!1s0xd0dcfc34903c125:0xc5cfcba5b149cff2!6m1!1v9!8m2!3d36.593778!4d-6.226493!16s%2Fg%2F11fqscvq1h" target="_blank" style="${btnStyle}background:#1D4ED8;">${scheduleLabels[lang] || scheduleLabels.es}</a>` : '';
     const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><a href="${mapsLink}" target="_blank" style="${btnStyle}background:var(--coral, #E8501A);">${label}</a>${scheduleBtn}</div>`;
 
@@ -373,7 +373,7 @@ function renderPopup(p) {
         walkHtml = `<style>@keyframes wfade{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}</style><div style="display:inline-flex;align-items:center;gap:5px;margin:4px 0 8px;padding:3px 10px;border-radius:20px;background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.25);animation:wfade 0.5s ease;"><span style="font-size:0.8rem;">🚶</span><span style="font-size:0.8rem;font-weight:700;color:#E8501A;">${walk.mins} min</span><span style="font-size:0.75rem;color:#888;">· ${walk.distStr} ${walkLabels[lang] || 'walk'}</span></div>`;
     }
 
-    return `<div style="font-family:sans-serif;padding:5px"><strong>${title}</strong>${walkHtml}<div style="font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
+    return `<div style="font-family:sans-serif;padding:2px 18px 2px 2px"><strong style="font-size:0.88rem;line-height:1.2;display:block;margin-bottom:2px;">${title}</strong>${walkHtml}<div style="font-size:0.78rem;line-height:1.3;color:#333;">${desc}</div>${btnHtml}</div>`;
 }
 
 function highlightCard(id) {
