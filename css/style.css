@@ -523,14 +523,36 @@
     }
     .poi-card:hover { border-color: var(--coral); transform: translateX(2px); box-shadow: 0 4px 16px rgba(255,107,53,0.12); }
     .poi-card.active { border-color: var(--coral); background: rgba(255,107,53,0.05); }
+    .poi-card.expanded { transform: none !important; border-color: var(--coral); background: rgba(255,107,53,0.05); align-items: flex-start; }
+    .poi-card.expanded .poi-name,
+    .poi-card.expanded .poi-addr { white-space: normal; overflow: visible; text-overflow: unset; }
 
     .poi-emoji { font-size: 1.4rem; flex-shrink: 0; line-height: 1.3; }
-    .poi-info { min-width: 0; }
+    .poi-info { min-width: 0; width: 100%; }
     .poi-name { font-size: 0.82rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .poi-addr { font-size: 0.7rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .poi-cat  { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
 
     .poi-walk { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
+
+    @keyframes wfade { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .poi-card-detail { margin-top: 9px; animation: wfade 0.28s ease; width: 100%; }
+    .poi-walk-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 20px;
+      background: rgba(232,80,26,0.1); border: 1px solid rgba(232,80,26,0.28);
+      font-size: 0.72rem; color: #E8501A; margin-bottom: 7px;
+    }
+    .poi-walk-pill strong { font-weight: 700; }
+    .poi-card-desc { font-size: 0.74rem; color: var(--text2); line-height: 1.45; margin-bottom: 9px; }
+    .poi-card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .poi-card-btn {
+      display: inline-block; color: #fff; padding: 5px 11px;
+      border-radius: 20px; text-decoration: none; font-weight: 700;
+      font-size: 0.72rem; background: var(--coral); transition: opacity 0.15s;
+    }
+    .poi-card-btn:hover { opacity: 0.82; }
+    .poi-card-btn-blue { background: #1D4ED8; }
 
     /* Dark map mode */
     .map-section.dark-map { background: #1a1a2e; }
