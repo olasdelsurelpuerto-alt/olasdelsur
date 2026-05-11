@@ -251,6 +251,7 @@ function initMap() {
         _mapLoaded = true;
         applyStyleLayers();
         renderMarkers();
+        initCardClicks();
         injectDistances();
         if (_mapVisible) startPanoramicFly();
     });
@@ -293,7 +294,7 @@ function makeMarkerEl(emoji, color, isHome) {
     // el is the outer wrapper — MapLibre controls its transform for geo-positioning
     // Never set transform on el directly or MapLibre's translate gets overwritten
     const el = document.createElement('div');
-    el.style.cssText = 'line-height:0;';
+    el.style.cssText = `line-height:0;${isHome ? 'z-index:9999;' : ''}`;
 
     // inner is the visual circle — safe to animate independently
     const inner = document.createElement('div');
@@ -352,16 +353,24 @@ function renderPopup(p) {
         de: "🚶 Wegbeschreibung",
         it: "🚶 Come arrivarci"
     };
+    const scheduleLabels = {
+        es: "🕐 Ver horarios",
+        en: "🕐 Timetable",
+        fr: "🕐 Horaires",
+        de: "🕐 Fahrplan",
+        it: "🕐 Orari"
+    };
     const label = btnLabels[lang] || btnLabels.es;
     const mapsLink = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${p.lat},${p.lng}&travelmode=walking`;
-    
-    const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;"><a href="${mapsLink}" target="_blank" style="display:inline-block;background:var(--coral, #E8501A);color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;">${label}</a></div>`;
+    const btnStyle = `display:inline-block;color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;`;
+    const scheduleBtn = p.id === 'catamaran' ? `<a href="https://www.google.com/maps/place/Terminal+Mar%C3%ADtima+El+Puerto/@36.5936483,-6.2268356,18z/data=!4m8!3m7!1s0xd0dcfc34903c125:0xc5cfcba5b149cff2!6m1!1v9!8m2!3d36.593778!4d-6.226493!16s%2Fg%2F11fqscvq1h" target="_blank" style="${btnStyle}background:#1D4ED8;">${scheduleLabels[lang] || scheduleLabels.es}</a>` : '';
+    const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><a href="${mapsLink}" target="_blank" style="${btnStyle}background:var(--coral, #E8501A);">${label}</a>${scheduleBtn}</div>`;
 
     let walkHtml = '';
     if (p.id !== 'home') {
         const walkLabels = { es: 'a pie', en: 'walk', fr: 'à pied', de: 'zu Fuß', it: 'a piedi' };
         const walk = calcWalk(p.lat, p.lng);
-        walkHtml = `<div style="font-size:0.78rem;color:#999;margin:3px 0 6px;">🚶 ${walk.mins} min · ${walk.distStr} ${walkLabels[lang] || 'walk'}</div>`;
+        walkHtml = `<style>@keyframes wfade{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}</style><div style="display:inline-flex;align-items:center;gap:5px;margin:4px 0 8px;padding:3px 10px;border-radius:20px;background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.25);animation:wfade 0.5s ease;"><span style="font-size:0.8rem;">🚶</span><span style="font-size:0.8rem;font-weight:700;color:#E8501A;">${walk.mins} min</span><span style="font-size:0.75rem;color:#888;">· ${walk.distStr} ${walkLabels[lang] || 'walk'}</span></div>`;
     }
 
     return `<div style="font-family:sans-serif;padding:5px"><strong>${title}</strong>${walkHtml}<div style="font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
@@ -374,6 +383,25 @@ function highlightCard(id) {
         card.classList.add('active');
         card.scrollIntoView({ behavior:'smooth', block:'nearest' });
     }
+}
+
+function initCardClicks() {
+    document.querySelectorAll('.poi-card').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => {
+            const id = card.id.replace('card-', '');
+            const item = mapMarkers[id];
+            if (!item) return;
+            const { marker, place } = item;
+            // Close any open popup first
+            Object.values(mapMarkers).forEach(m => {
+                if (m.marker.getPopup().isOpen()) m.marker.togglePopup();
+            });
+            highlightCard(id);
+            map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), duration: 700, essential: true });
+            setTimeout(() => { if (!marker.getPopup().isOpen()) marker.togglePopup(); }, 500);
+        });
+    });
 }
 
 function filterMapMarkers(cat) {
