@@ -497,6 +497,22 @@
     .poi-addr { font-size: 0.7rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .poi-cat  { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 4px; }
 
+    .poi-walk { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
+
+    /* Dark map mode */
+    .map-section.dark-map { background: #1a1a2e; }
+    .map-section.dark-map .section-label,
+    .map-section.dark-map .section-title,
+    .map-section.dark-map .section-desc { color: rgba(255,255,255,0.85); }
+    .map-section.dark-map .filter-btn { background: #2a2a40; color: #ccc; border-color: rgba(200,200,255,0.15); }
+    .map-section.dark-map .filter-btn:hover { background: #3a3a55; border-color: var(--coral); color: #fff; }
+    .map-section.dark-map .filter-btn.active { background: var(--coral); border-color: var(--coral); color: #fff; }
+    .map-section.dark-map .poi-sidebar { background: #1e1e30; border-color: rgba(255,255,255,0.08); }
+    .map-section.dark-map .poi-card { background: #2a2a40; border-color: rgba(255,255,255,0.1); }
+    .map-section.dark-map .poi-name { color: #eee; }
+    .map-section.dark-map .poi-addr,
+    .map-section.dark-map .poi-walk { color: #888; }
+
     .cat-beach        { color: #0EA5E9; }   /* azzurro cielo atlantico */
     .cat-nightlife    { color: #7C3AED; }   /* viola profondo */
     .cat-culture      { color: #B45309; }   /* ambra/ocra antico */
@@ -662,7 +678,7 @@
     .cta-section {
       padding: 56px 24px;
       text-align: center;
-      background: url('assets/sherry-boat-bg-4k.png') 75% center/cover no-repeat, linear-gradient(160deg, var(--coral) 0%, #FF9340 50%, var(--gold) 100%);
+      background: url('assets/sherry-boat-bg.webp') 75% center/cover no-repeat, linear-gradient(160deg, var(--coral) 0%, #FF9340 50%, var(--gold) 100%);
       position: relative;
       overflow: hidden;
     }
@@ -1138,7 +1154,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('../assets/promo_hero_drone_view_1774801703561.png');
+      background-image: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), url('../assets/promo_hero_drone_view.webp');
       background-size: cover;
       background-position: center;
       display: flex;
@@ -1157,7 +1173,7 @@
     }
 
     .video-overlay.ended {
-      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes_1774801764370.png');
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes.webp');
     }
 
     /* Invisible shield to block clicks on YouTube iframe */
@@ -1196,7 +1212,7 @@
     .video-end-scenic {
       width: 100%;
       height: 100%;
-      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes_1774801764370.png');
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes.webp');
       background-size: cover;
       background-position: center;
       border-radius: 12px;

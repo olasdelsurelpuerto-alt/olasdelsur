@@ -66,48 +66,262 @@ function startAtmosphereAudioOnce(btn) {
     if (btn) btn.classList.add('fading');
 }
 
-// ── Map Setup ──
+// ── Map Setup (MapLibre GL 3D) ──
 let map;
-const leafletMarkers = {};
+const mapMarkers = {};
+let _autoRotate = false, _bearing = 0, _rotateRAF = null;
+let _mapLoaded = false, _mapVisible = false, _revealed = false;
+let _mapDark = false, _flyoverActive = false;
 
-function initMap() {
-    map = L.map('map', {
-        center: [36.5885, -6.2320],
-        zoom: 14,
-        zoomControl: true,
-    });
+const FLYOVER_STOPS = [
+    { center: [-6.2450, 36.5780], zoom: 12.5, pitch: 45, bearing: -10, duration: 4000 }, // panoramica città
+    { center: [-6.2552, 36.5803], zoom: 14,   pitch: 55, bearing:  35, duration: 4500 }, // Puerto Sherry marina
+    { center: [-6.2253, 36.5737], zoom: 14,   pitch: 55, bearing: -40, duration: 4500 }, // Playa Valdelagrana
+    { center: [-6.2270, 36.5965], zoom: 15,   pitch: 50, bearing:  20, duration: 4000 }, // centro storico
+    { center: [-6.2320, 36.5885], zoom: 14,   pitch: 45, bearing:   0, duration: 3500 }, // home — fine tour
+];
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-    }).addTo(map);
+const MAP_STYLES = {
+    light: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+    dark:  'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+};
+const HOME = { lat: 36.588769, lng: -6.231999 };
 
-    renderMarkers();
-    
-    // Home pulse ring
-    L.circle([36.588769, -6.231999], {
-        color:'#FF6B35', fillColor:'#FF6B35', fillOpacity:0.07,
-        weight:2, opacity:0.4, radius:130
-    }).addTo(map);
+function calcWalk(lat, lng) {
+    const R = 6371000;
+    const dLat = (lat - HOME.lat) * Math.PI / 180;
+    const dLng = (lng - HOME.lng) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(HOME.lat * Math.PI/180) * Math.cos(lat * Math.PI/180) * Math.sin(dLng/2)**2;
+    const d = Math.round(R * 2 * Math.asin(Math.sqrt(a)));
+    const mins = Math.max(1, Math.round(d / 83));
+    return { m: d, mins, distStr: d < 1000 ? d + ' m' : (d / 1000).toFixed(1) + ' km' };
 }
 
-function makeIcon(emoji, color, isHome) {
-    const s = isHome ? 50 : 38;
-    const fs = isHome ? 22 : 16;
-    const html = `<div style="width:${s}px;height:${s}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:${fs}px;border:2px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.25);transition:transform 0.15s;">${emoji}</div>`;
-    return L.divIcon({ html, className:'', iconSize:[s,s], iconAnchor:[s/2,s/2], popupAnchor:[0,-s/2+4] });
+function startAutoRotate() {
+    _autoRotate = true;
+    (function tick() {
+        if (!_autoRotate || !map) return;
+        _bearing = (_bearing + 0.04) % 360;
+        map.setBearing(_bearing);
+        _rotateRAF = requestAnimationFrame(tick);
+    })();
+}
+
+function stopAutoRotate() {
+    _autoRotate = false;
+    if (_flyoverActive) {
+        _flyoverActive = false;
+        map.stop();
+    }
+    if (_rotateRAF) { cancelAnimationFrame(_rotateRAF); _rotateRAF = null; }
+    if (map) _bearing = map.getBearing();
+}
+
+function startPanoramicFly() {
+    if (_revealed || !map) return;
+    _revealed = true;
+    _flyoverActive = true;
+    let step = 0;
+
+    function flyNext() {
+        if (!_flyoverActive || step >= FLYOVER_STOPS.length) {
+            _flyoverActive = false;
+            // tour completato — mappa ferma, nessuna rotazione automatica
+            return;
+        }
+        map.flyTo({ ...FLYOVER_STOPS[step++], essential: true });
+        map.once('moveend', flyNext);
+    }
+
+    flyNext();
+}
+
+function applyStyleLayers() {
+    try {
+        map.addLayer({
+            id: 'sky', type: 'sky',
+            paint: { 'sky-type': 'atmosphere', 'sky-atmosphere-sun': [0.0, 60.0], 'sky-atmosphere-sun-intensity': 10 }
+        });
+    } catch(e) { console.warn('Sky:', e.message); }
+
+    try {
+        map.setFog({
+            range: [0.8, 8], color: 'rgba(200,220,240,0.9)', 'horizon-blend': 0.06,
+            'high-color': '#b8d4f0', 'space-color': '#0A0E27', 'star-intensity': 0.15
+        });
+    } catch(e) { console.warn('Fog:', e.message); }
+
+    enhanceMapColors();
+}
+
+function enhanceMapColors() {
+    const style = map.getStyle();
+    if (!style?.layers) return;
+
+    const waterFill = _mapDark ? '#0a3550' : '#1fbccc';
+    const waterLine = _mapDark ? '#0a3550' : '#18a8c0';
+    const beachFill = _mapDark ? '#7a6535' : '#f2ce60';
+
+    style.layers.forEach(l => {
+        const sl = l['source-layer'];
+        if (!sl) return;
+        try {
+            // Sea, lakes, Guadalete river polygons
+            if (sl === 'water' && l.type === 'fill') {
+                map.setPaintProperty(l.id, 'fill-color', waterFill);
+            }
+            // Waterway lines (rivers, canals)
+            if (sl === 'waterway' && l.type === 'line') {
+                map.setPaintProperty(l.id, 'line-color', waterLine);
+            }
+            // Beach / sand areas (OpenMapTiles: landcover class=sand)
+            if ((sl === 'landcover' || sl === 'landuse') && l.type === 'fill') {
+                const filterStr = JSON.stringify(l.filter || '');
+                if (filterStr.includes('sand') || filterStr.includes('beach') ||
+                    l.id.toLowerCase().includes('sand') || l.id.toLowerCase().includes('beach')) {
+                    map.setPaintProperty(l.id, 'fill-color', beachFill);
+                    map.setPaintProperty(l.id, 'fill-opacity', 0.85);
+                }
+            }
+        } catch(e) { /* layer might not accept this property */ }
+    });
+}
+
+class DarkModeControl {
+    onAdd(m) {
+        this._container = document.createElement('div');
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+        const btn = document.createElement('button');
+        btn.id = 'map-darkmode-btn';
+        btn.title = 'Mappa scura / Dark map';
+        btn.textContent = '🌙';
+        btn.style.cssText = 'font-size:15px;width:29px;height:29px;cursor:pointer;background:white;border:none;line-height:1;';
+        btn.onclick = toggleMapStyle;
+        this._container.appendChild(btn);
+        return this._container;
+    }
+    onRemove() { this._container.parentNode?.removeChild(this._container); }
+}
+
+function toggleMapStyle() {
+    _mapDark = !_mapDark;
+    const btn = document.getElementById('map-darkmode-btn');
+    if (btn) { btn.textContent = _mapDark ? '☀️' : '🌙'; btn.style.background = _mapDark ? '#1a1a2e' : 'white'; }
+    document.querySelector('.map-section')?.classList.toggle('dark-map', _mapDark);
+    map.setStyle(_mapDark ? MAP_STYLES.dark : MAP_STYLES.light);
+}
+
+function injectDistances() {
+    if (typeof places === 'undefined') return;
+    places.forEach(p => {
+        if (p.id === 'home') return;
+        const card = document.getElementById('card-' + p.id);
+        if (!card) return;
+        const walk = calcWalk(p.lat, p.lng);
+        let badge = card.querySelector('.poi-walk');
+        if (!badge) {
+            badge = document.createElement('div');
+            badge.className = 'poi-walk';
+            const info = card.querySelector('.poi-info');
+            if (info) info.appendChild(badge);
+        }
+        badge.textContent = `🚶 ${walk.mins} min · ${walk.distStr}`;
+    });
+}
+
+function initMap() {
+    const mapEl = document.getElementById('map');
+    if (!mapEl || typeof maplibregl === 'undefined') return;
+
+    map = new maplibregl.Map({
+        container: 'map',
+        style: MAP_STYLES.light,
+        center: [-6.2320, 36.5885],
+        zoom: 14,
+        pitch: 0,
+        bearing: 0
+    });
+
+    map.addControl(new maplibregl.NavigationControl(), 'top-left');
+    map.addControl(new DarkModeControl(), 'top-left');
+
+    ['mousedown', 'touchstart', 'wheel', 'dragstart'].forEach(evt => map.on(evt, stopAutoRotate));
+
+    map.on('load', () => {
+        _mapLoaded = true;
+        applyStyleLayers();
+        renderMarkers();
+        injectDistances();
+        if (_mapVisible) startPanoramicFly();
+    });
+
+    // Re-apply custom layers after every style change (dark/light toggle)
+    map.on('style.load', () => {
+        if (_mapLoaded) applyStyleLayers();
+    });
+
+    // Home pulse ring
+    const pulseEl = document.createElement('div');
+    pulseEl.style.cssText = 'width:30px;height:30px;border-radius:50%;border:3px solid #E8501A;background:rgba(232,80,26,0.15);animation:pulseRing 2s infinite;';
+    new maplibregl.Marker({ element: pulseEl, anchor: 'center' })
+        .setLngLat([-6.231999, 36.588769]).addTo(map);
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = '@keyframes pulseRing{0%{transform:scale(1);opacity:1}100%{transform:scale(4);opacity:0}}';
+    document.head.appendChild(styleEl);
+
+    // IntersectionObserver: pitch reveal on scroll
+    const mapSection = document.querySelector('.map-section') || mapEl;
+    if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting && !_mapVisible) {
+                    _mapVisible = true;
+                    if (_mapLoaded) startPanoramicFly();
+                    obs.unobserve(mapSection);
+                }
+            });
+        }, { threshold: 0.25 });
+        obs.observe(mapSection);
+    } else {
+        _mapVisible = true;
+    }
+}
+
+function makeMarkerEl(emoji, color, isHome) {
+    const s = isHome ? 50 : 38, fs = isHome ? 22 : 16;
+    // el is the outer wrapper — MapLibre controls its transform for geo-positioning
+    // Never set transform on el directly or MapLibre's translate gets overwritten
+    const el = document.createElement('div');
+    el.style.cssText = 'line-height:0;';
+
+    // inner is the visual circle — safe to animate independently
+    const inner = document.createElement('div');
+    inner.innerHTML = emoji;
+    inner.style.cssText = `width:${s}px;height:${s}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:${fs}px;border:2px solid white;box-shadow:0 0 14px ${color};cursor:pointer;transition:transform 0.15s;`;
+    inner.addEventListener('mouseenter', () => { inner.style.transform = 'scale(1.15)'; });
+    inner.addEventListener('mouseleave', () => { inner.style.transform = ''; });
+
+    el.appendChild(inner);
+    return el;
 }
 
 function renderMarkers() {
+    if (typeof places === 'undefined') return;
     places.forEach(p => {
         const isHome = p.category === 'home';
-        const icon = makeIcon(p.icon, categoryColors[p.category], isHome);
-        const marker = L.marker([p.lat, p.lng], { icon, zIndexOffset: isHome ? 1000 : 0 });
-
-        marker.bindPopup(() => renderPopup(p), { maxWidth: 260 });
-        marker.addTo(map);
-        leafletMarkers[p.id] = { marker, place: p };
-
-        marker.on('click', () => highlightCard(p.id));
+        const color = categoryColors[p.category] || '#08D9D6';
+        const el = makeMarkerEl(p.icon, color, isHome);
+        const popup = new maplibregl.Popup({ offset: [0, isHome ? -28 : -22], maxWidth: '280px' });
+        popup.on('open', () => popup.setHTML(renderPopup(p)));
+        const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
+        mapMarkers[p.id] = { marker, place: p };
+        el.addEventListener('click', () => {
+            stopAutoRotate();
+            map.flyTo({ center: [p.lng, p.lat], zoom: 16, pitch: 60, duration: 2000 });
+            highlightCard(p.id);
+        });
     });
 }
 
@@ -143,7 +357,14 @@ function renderPopup(p) {
     
     const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;"><a href="${mapsLink}" target="_blank" style="display:inline-block;background:var(--coral, #E8501A);color:white;padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.85rem;">${label}</a></div>`;
 
-    return `<div style="font-family:sans-serif;padding:5px"><strong>${title}</strong><div style="margin-top:6px;font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
+    let walkHtml = '';
+    if (p.id !== 'home') {
+        const walkLabels = { es: 'a pie', en: 'walk', fr: 'à pied', de: 'zu Fuß', it: 'a piedi' };
+        const walk = calcWalk(p.lat, p.lng);
+        walkHtml = `<div style="font-size:0.78rem;color:#999;margin:3px 0 6px;">🚶 ${walk.mins} min · ${walk.distStr} ${walkLabels[lang] || 'walk'}</div>`;
+    }
+
+    return `<div style="font-family:sans-serif;padding:5px"><strong>${title}</strong>${walkHtml}<div style="font-size:0.9rem;line-height:1.4;">${desc}</div>${btnHtml}</div>`;
 }
 
 function highlightCard(id) {
@@ -156,36 +377,22 @@ function highlightCard(id) {
 }
 
 function filterMapMarkers(cat) {
-    // 1. Filter Map Markers
-    for (const id in leafletMarkers) {
-        const item = leafletMarkers[id];
-        const p = item.place;
-        // Keep home visible or matched category
-        if (cat === 'all' || p.category === cat || p.category === 'home') {
-            if (!map.hasLayer(item.marker)) {
-                item.marker.addTo(map);
-            }
-        } else {
-            if (map.hasLayer(item.marker)) {
-                map.removeLayer(item.marker);
-            }
-        }
+    // Filter MapLibre markers by toggling element visibility
+    for (const id in mapMarkers) {
+        const item = mapMarkers[id];
+        const visible = cat === 'all' || item.place.category === cat || item.place.category === 'home';
+        const el = item.marker.getElement();
+        if (el) el.style.display = visible ? '' : 'none';
     }
-    
-    // 2. Filter Sidebar Cards
+
+    // Filter sidebar cards
     document.querySelectorAll('.poi-card').forEach(card => {
         if (cat === 'all') {
             card.style.display = 'flex';
         } else {
             const placeId = card.id.replace('card-', '');
             const place = places.find(x => x.id === placeId);
-            if (place && place.category === cat) {
-                card.style.display = 'flex';
-            } else if (placeId === 'home' && cat === 'home') {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = (place && (place.category === cat || (placeId === 'home' && cat === 'home'))) ? 'flex' : 'none';
         }
     });
 }
@@ -299,10 +506,28 @@ function setLang(lang) {
     }
 }
 
+// ── CTA background alignment ──
+// Moves the background image so its center sits precisely behind the boat video.
+// Adjust CTA_BG_OFFSET_X (px) if the image's focal point is not at its center.
+const CTA_BG_OFFSET_X = 0;
+
+function alignCtaBg() {
+    const video   = document.querySelector('.sherry-video-wrapper');
+    const section = document.querySelector('.cta-section');
+    if (!video || !section) return;
+    const vr = video.getBoundingClientRect();
+    const sr = section.getBoundingClientRect();
+    const centerInSection = (vr.left - sr.left) + vr.width / 2 + CTA_BG_OFFSET_X;
+    const xPct = Math.max(0, Math.min(100, (centerInSection / sr.width) * 100));
+    section.style.backgroundPositionX = xPct.toFixed(1) + '%';
+}
+
 // ── Listeners ──
 window.addEventListener('load', () => {
     initMap();
     renderPoiChips('all');
+    alignCtaBg();
+    window.addEventListener('resize', alignCtaBg);
     
     // Map Filter Buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {

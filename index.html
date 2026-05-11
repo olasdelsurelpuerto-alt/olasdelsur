@@ -15,9 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link rel="stylesheet" href="css/style.css?v=11">
 
 </head>
 <body>
@@ -38,7 +38,7 @@
   <!-- ── Cinematic native video background ── -->
   <div class="hero-bg-wrap" aria-hidden="true">
     <video autoplay muted loop playsinline class="hero-bg-video">
-      <source src="assets/atmosfera_01.mp4" type="video/mp4">
+      <source src="assets/atmosfera_01_720p.mp4" type="video/mp4">
     </video>
     <div class="hero-slide-overlay"></div>
   </div><!-- /hero-bg-wrap -->
@@ -54,7 +54,7 @@
       </a>
     </div>
 
-    <img src="logo.png" alt="OlasDelSur Logo" style="max-width: 90vw; width: 750px; height: auto; display: block; margin: 0 auto 16px; border: none; box-shadow: none; -webkit-mask-image: radial-gradient(ellipse closest-side at center, black 60%, rgba(0,0,0,0) 95%); mask-image: radial-gradient(ellipse closest-side at center, black 60%, rgba(0,0,0,0) 95%); opacity: 0.82;">
+    <img src="logo.webp" alt="OlasDelSur Logo" style="max-width: 90vw; width: 750px; height: auto; display: block; margin: 0 auto 16px; border: none; box-shadow: none; -webkit-mask-image: radial-gradient(ellipse closest-side at center, black 60%, rgba(0,0,0,0) 95%); mask-image: radial-gradient(ellipse closest-side at center, black 60%, rgba(0,0,0,0) 95%); opacity: 0.82;">
 
 
 
@@ -285,7 +285,7 @@
 
 <!-- ══════════ FOOTER ══════════ -->
 <footer>
-  <div class="footer-logo"><img src="logo.png" alt="OlasDelSur" style="width: 150px; height: auto; display: block; margin: 0 auto; -webkit-mask-image: radial-gradient(circle at center, black 50%, rgba(0,0,0,0) 72%); mask-image: radial-gradient(circle at center, black 50%, rgba(0,0,0,0) 73%); opacity: 0.9;"></div>
+  <div class="footer-logo"><img src="logo.webp" alt="OlasDelSur" style="width: 150px; height: auto; display: block; margin: 0 auto; -webkit-mask-image: radial-gradient(circle at center, black 50%, rgba(0,0,0,0) 72%); mask-image: radial-gradient(circle at center, black 50%, rgba(0,0,0,0) 73%); opacity: 0.9;"></div>
 
 
 
@@ -316,6 +316,6 @@
 
 <!-- ══════════ JS ══════════ -->
 <script src="js/data.js?v=6"></script>
-<script src="js/main.js?v=20"></script>
+<script src="js/main.js?v=29"></script>
 </body>
 </html>
