@@ -5,3 +5,5 @@ test_*.js
 *.png
 !logo.png
 !css/assets/*.png
+.env
+.env.local

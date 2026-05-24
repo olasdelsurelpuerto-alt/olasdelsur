@@ -17,6 +17,10 @@
 
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <!-- Umami Analytics — OlasDelSur -->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="b044993b-4731-465d-afdb-784bcad43e6d"></script>
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is https://unpkg.com https://www.youtube.com https://www.youtube-nocookie.com https://fonts.googleapis.com; connect-src 'self' https://cloud.umami.is; font-src https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; img-src 'self' data: https:; frame-src https://www.youtube-nocookie.com; media-src 'self';">
   <link rel="stylesheet" href="css/style.css?v=16">
 
 </head>
@@ -49,7 +53,7 @@
   <!-- Brand content -->
   <div class="hero-content">
     <div class="hero-badge-wrap">
-      <a href="javascript:void(0)" onclick="startAtmosphereAudioOnce(this)" class="hero-audio-btn" style="margin-bottom: 8px;">
+      <a href="javascript:void(0)" onclick="startAtmosphereAudioOnce(this)" class="hero-audio-btn" data-umami-event="click-audio-atmosphere" style="margin-bottom: 8px;">
         🔊 <span data-lang="es">Activar Audio</span><span data-lang="en">Activate Audio</span><span data-lang="fr">Activer l'Audio</span><span data-lang="de">Audio aktivieren</span><span data-lang="it">Attiva Audio</span>
       </a>
     </div>
@@ -254,7 +258,7 @@
       <p class="cta-sub"><span data-lang="es">Playa, gastronomía, cultura y vida nocturna — todo al alcance de la mano desde la Bajamar recién renovada.</span><span data-lang="en">Beach, gastronomy, culture and nightlife — everything within reach from the newly renovated Bajamar.</span><span data-lang="fr">Plage, gastronomie, culture et vie nocturne — tout à portée de main depuis la Bajamar nouvellement rénovée.</span><span data-lang="de">Strand, Gastronomie, Kultur und Nachtleben — alles in Reichweite der neu renovierten Bajamar.</span><span data-lang="it">Spiaggia, gastronomia, cultura e vita notturna — tutto a portata di mano dalla Bajamar appena rinnovata.</span></p>
 
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative">
-        <a href="https://www.airbnb.com/rooms/833027419091697738?unique_share_id=b44f9908-1b50-4db7-8c14-f85f222d304c&viralityEntryPoint=1&s=76" target="_blank" class="btn btn-white" style="font-size:1rem;padding:16px 38px">
+        <a href="https://www.airbnb.com/rooms/833027419091697738?unique_share_id=b44f9908-1b50-4db7-8c14-f85f222d304c&viralityEntryPoint=1&s=76" target="_blank" rel="noopener noreferrer" class="btn btn-white" data-umami-event="click-booking-airbnb" style="font-size:1rem;padding:16px 38px">
           <span data-lang="es">🏠 Reservar en Airbnb</span><span data-lang="en">🏠 Book on Airbnb</span><span data-lang="fr">🏠 Réserver sur Airbnb</span><span data-lang="de">🏠 Bei Airbnb buchen</span><span data-lang="it">🏠 Prenota su Airbnb</span>
         </a>
       </div>
@@ -271,7 +275,7 @@
         </video>
         
         <!-- The Logo and CTA linked to Instagram -->
-        <a href="https://www.instagram.com/sherryboatco?igsh=MXZiY2JhNGQ3ZHk5OQ%3D%3D&utm_source=qr" target="_blank" class="sherry-logo-link" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 25px 0; text-decoration: none;">
+        <a href="https://www.instagram.com/sherryboatco?igsh=MXZiY2JhNGQ3ZHk5OQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="sherry-logo-link" data-umami-event="click-booking-sherry" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 25px 0; text-decoration: none;">
           
           <div class="sherry-logo-placeholder" style="width: 100px; height: 100px; border-radius: 50%; background-color: rgba(29, 63, 117, 0.95); color: white; display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--font-display); font-weight: bold; font-size: 0.95rem; line-height: 1.1; box-shadow: 0 6px 20px rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.8); transition: transform 0.3s; flex-shrink: 0;">
             SHERRY<br>BOAT
@@ -302,16 +306,16 @@
   <div class="footer-links">
     <a href="#mappa"><span data-lang="es">🗺️ Mapa</span><span data-lang="en">🗺️ Map</span><span data-lang="fr">🗺️ Carte</span><span data-lang="de">🗺️ Karte</span><span data-lang="it">🗺️ Mappa</span></a>
     
-    <a href="https://playacanalla.com" target="_blank">🎶 Playa Canalla</a>
-    <a href="https://www.instagram.com/margaritapuertosherry/" target="_blank">🍹 Margarita</a>
-    <a href="https://www.instagram.com/phiphibeachpuertosherry/" target="_blank">🍹 PhiPhi</a>
-    <a href="https://maps.app.goo.gl/GiSgZ18XSrp8zCn27" target="_blank">🎭 Lio Club</a>
-    <a href="https://m.facebook.com/lacristaleracopas" target="_blank">🎹 La Cristalera</a>
-    <a href="https://bananaelpuerto.com" target="_blank">🍌 Banana Club</a>
+    <a href="https://playacanalla.com" target="_blank" rel="noopener noreferrer">🎶 Playa Canalla</a>
+    <a href="https://www.instagram.com/margaritapuertosherry/" target="_blank" rel="noopener noreferrer">🍹 Margarita</a>
+    <a href="https://www.instagram.com/phiphibeachpuertosherry/" target="_blank" rel="noopener noreferrer">🍹 PhiPhi</a>
+    <a href="https://maps.app.goo.gl/GiSgZ18XSrp8zCn27" target="_blank" rel="noopener noreferrer">🎭 Lio Club</a>
+    <a href="https://m.facebook.com/lacristaleracopas" target="_blank" rel="noopener noreferrer">🎹 La Cristalera</a>
+    <a href="https://bananaelpuerto.com" target="_blank" rel="noopener noreferrer">🍌 Banana Club</a>
   </div>
 
   <p class="footer-copy">© 2026 OlasDelSur · Avenida de la Bajamar 88 · El Puerto de Santa María, Cádiz, España</p>
-  <p class="footer-copy" style="margin-top:4px"><span data-lang="es">Datos:</span><span data-lang="en">Data:</span><span data-lang="fr">Données:</span><span data-lang="de">Daten:</span><span data-lang="it">Dati:</span> <a href="https://www.airdna.co" target="_blank" style="color:rgba(255,220,160,0.35)">AirDNA</a> · <a href="https://www.elpuertodesantamaria.es" target="_blank" style="color:rgba(255,220,160,0.35)">Ayuntamiento PSM</a></p>
+  <p class="footer-copy" style="margin-top:4px"><span data-lang="es">Datos:</span><span data-lang="en">Data:</span><span data-lang="fr">Données:</span><span data-lang="de">Daten:</span><span data-lang="it">Dati:</span> <a href="https://www.airdna.co" target="_blank" rel="noopener noreferrer" style="color:rgba(255,220,160,0.35)">AirDNA</a> · <a href="https://www.elpuertodesantamaria.es" target="_blank" rel="noopener noreferrer" style="color:rgba(255,220,160,0.35)">Ayuntamiento PSM</a></p>
   <p class="footer-copy" style="margin-top:12px; opacity: 0.6; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase;"> 
     <span data-lang="es">© 2026 OlasDelSur · Todos los derechos reservados</span> 
     <span data-lang="en">© 2026 OlasDelSur · All rights reserved</span> 

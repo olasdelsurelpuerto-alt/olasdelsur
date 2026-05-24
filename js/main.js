@@ -64,6 +64,10 @@ function startCinematicVideo() {
 function startAtmosphereAudioOnce(btn) {
     startCinematicVideo();
     if (btn) btn.classList.add('fading');
+    // Track video play
+    if (typeof umami !== 'undefined') {
+        umami.track('click-play-atmosphere-video');
+    }
 }
 
 // ── Map Setup (MapLibre GL 3D) ──
@@ -319,6 +323,9 @@ function renderMarkers() {
             .setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
         mapMarkers[p.id] = { marker, place: p };
         el.addEventListener('click', () => {
+            if (typeof umami !== 'undefined') {
+                umami.track('click-map-marker', { poi: p.id, category: p.category });
+            }
             stopAutoRotate();
             map.flyTo({ center: [p.lng, p.lat], zoom: 16, pitch: 60, duration: 2000 });
             highlightCard(p.id);
@@ -339,9 +346,9 @@ function renderPopup(p) {
     const mapsLink = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${p.lat},${p.lng}&travelmode=walking`;
     const btnStyle = `display:inline-block;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.78rem;`;
     const scheduleBtn = p.id === 'catamaran'
-        ? `<a href="https://www.google.com/maps/place/Terminal+Mar%C3%ADtima+El+Puerto/@36.5936483,-6.2268356,18z/data=!4m8!3m7!1s0xd0dcfc34903c125:0xc5cfcba5b149cff2!6m1!1v9!8m2!3d36.593778!4d-6.226493!16s%2Fg%2F11fqscvq1h" target="_blank" style="${btnStyle}background:#1D4ED8;">${scheduleLabels[lang] || scheduleLabels.es}</a>`
+        ? `<a href="https://www.google.com/maps/place/Terminal+Mar%C3%ADtima+El+Puerto/@36.5936483,-6.2268356,18z/data=!4m8!3m7!1s0xd0dcfc34903c125:0xc5cfcba5b149cff2!6m1!1v9!8m2!3d36.593778!4d-6.226493!16s%2Fg%2F11fqscvq1h" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#1D4ED8;">${scheduleLabels[lang] || scheduleLabels.es}</a>`
         : '';
-    const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><a href="${mapsLink}" target="_blank" style="${btnStyle}background:var(--coral,#E8501A);">${btnLabels[lang] || btnLabels.es}</a>${scheduleBtn}</div>`;
+    const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><a href="${mapsLink}" target="_blank" rel="noopener noreferrer" data-umami-event="click-route-google-maps" data-umami-event-poi="${p.id}" style="${btnStyle}background:var(--coral,#E8501A);">${btnLabels[lang] || btnLabels.es}</a>${scheduleBtn}</div>`;
 
     let walkHtml = '';
     if (p.id !== 'home') {
@@ -366,6 +373,9 @@ function initCardClicks() {
         card.style.cursor = 'pointer';
         card.addEventListener('click', () => {
             const id = card.id.replace('card-', '');
+            if (typeof umami !== 'undefined') {
+                umami.track('click-poi-card', { poi: id });
+            }
             const item = mapMarkers[id];
             if (!item) return;
             const { marker, place } = item;
@@ -423,6 +433,11 @@ function showPoiDetail(id) {
     const p = poiData.find(x => x.id === id);
     if (!p) return;
     
+    // Track POI detail view
+    if (typeof umami !== 'undefined') {
+        umami.track('click-poi-explorer-chip', { poi: id, category: p.cat });
+    }
+    
     // Highlight the clicked chip
     document.querySelectorAll('.poi-chip').forEach(c => c.classList.remove('active'));
     const chip = document.querySelector(`.poi-chip[data-id="${id}"]`);
@@ -464,7 +479,7 @@ function showPoiDetail(id) {
         html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">📞</span><div class="poi-detail-row-text"><a href="tel:${p.phone.replace(/\s+/g,'')}">${p.phone}</a></div></div>`;
     }
     if (p.www) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🌐</span><div class="poi-detail-row-text"><a href="${p.www}" target="_blank" style="color:var(--coral);text-decoration:none;font-weight:600;">${t.website}</a></div></div>`;
+        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🌐</span><div class="poi-detail-row-text"><a href="${p.www}" target="_blank" rel="noopener noreferrer" style="color:var(--coral);text-decoration:none;font-weight:600;">${t.website}</a></div></div>`;
     }
     if (p.tips_es) {
         html += `<div class="poi-detail-row" style="margin-top:8px;"><span class="poi-detail-row-icon">💡</span><div class="poi-detail-row-text"><strong>${t.tip}</strong> ${p['tips_'+lang]||p.tips_es}</div></div>`;
@@ -478,7 +493,7 @@ function showPoiDetail(id) {
         const routeUrl = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${place.lat},${place.lng}&travelmode=walking`;
         html += `
         <div class="poi-detail-actions" style="margin-top: 20px;">
-          <a href="${routeUrl}" target="_blank" class="poi-btn-primary" style="display:inline-block; padding:12px 24px; background:var(--coral); color:#fff; border-radius:12px; text-decoration:none; font-weight:700;">${t.howToGet}</a>
+          <a href="${routeUrl}" target="_blank" rel="noopener noreferrer" class="poi-btn-primary" style="display:inline-block; padding:12px 24px; background:var(--coral); color:#fff; border-radius:12px; text-decoration:none; font-weight:700;">${t.howToGet}</a>
         </div>
         `;
     }
@@ -492,6 +507,10 @@ function setLang(lang) {
     document.documentElement.lang = lang;
     document.documentElement.className = 'lang-' + lang;
     window._olasLang = lang;
+
+    if (typeof umami !== 'undefined') {
+        umami.track('click-change-language', { lang: lang });
+    }
     
     // Update active lang button
     document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
@@ -540,6 +559,10 @@ window.addEventListener('load', () => {
             this.classList.add('active');
             const cat = this.getAttribute('data-cat');
             filterMapMarkers(cat);
+            // Track map category filter
+            if (typeof umami !== 'undefined') {
+                umami.track('click-map-filter', { category: cat });
+            }
         });
     });
     
@@ -550,6 +573,10 @@ window.addEventListener('load', () => {
             this.classList.add('active');
             const filter = this.getAttribute('data-filter');
             renderPoiChips(filter);
+            // Track POI explorer tab switch
+            if (typeof umami !== 'undefined') {
+                umami.track('click-poi-explorer-tab', { filter });
+            }
         });
     });
 });
