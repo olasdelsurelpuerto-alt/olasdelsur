@@ -141,20 +141,6 @@ function startPanoramicFly() {
 }
 
 function applyStyleLayers() {
-    try {
-        map.addLayer({
-            id: 'sky', type: 'sky',
-            paint: { 'sky-type': 'atmosphere', 'sky-atmosphere-sun': [0.0, 60.0], 'sky-atmosphere-sun-intensity': 10 }
-        });
-    } catch(e) { console.warn('Sky:', e.message); }
-
-    try {
-        map.setFog({
-            range: [0.8, 8], color: 'rgba(200,220,240,0.9)', 'horizon-blend': 0.06,
-            'high-color': '#b8d4f0', 'space-color': '#0A0E27', 'star-intensity': 0.15
-        });
-    } catch(e) { console.warn('Fog:', e.message); }
-
     enhanceMapColors();
 }
 
