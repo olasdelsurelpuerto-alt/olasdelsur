@@ -62,9 +62,9 @@ function startCinematicVideo() {
 }
 
 function startAtmosphereAudioOnce(btn) {
+    if (window._inAppBrowser) return;
     startCinematicVideo();
     if (btn) btn.classList.add('fading');
-    // Track video play
     if (typeof umami !== 'undefined') {
         umami.track('click-play-atmosphere-video');
     }

@@ -28,6 +28,65 @@
 </head>
 <body>
 
+<!-- In-App Browser Banner (Instagram, Facebook, Airbnb WebView) -->
+<script>
+(function () {
+    var ua = navigator.userAgent || '';
+    if (!/Instagram|FBAN|FBAV|FBIOS|FB_IAB|Airbnb|Twitter\//i.test(ua)) return;
+    window._inAppBrowser = true;
+
+    var lang = (navigator.language || 'es').slice(0, 2).toLowerCase();
+    var T = {
+        es: ['Audio y video no disponibles en esta app. Abre en el navegador para la experiencia completa.', 'Copiar enlace', 'Copiado!'],
+        en: ['Audio and video unavailable in this app. Open in your browser for the full experience.', 'Copy link', 'Copied!'],
+        fr: ['Audio et video indisponibles. Ouvrez dans votre navigateur.', 'Copier le lien', 'Copie!'],
+        de: ['Audio und Video nicht verfuegbar. Im Browser oeffnen.', 'Link kopieren', 'Kopiert!'],
+        it: ['Audio e video non disponibili. Apri nel browser per l\'esperienza completa.', 'Copia link', 'Copiato!']
+    };
+    var t = T[lang] || T.en;
+    var url = location.href;
+
+    var banner = document.createElement('div');
+    banner.id = 'iab-banner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(90deg,#D94F2B,#FF6B35);color:#fff;font-family:DM Sans,sans-serif;font-size:13px;line-height:1.4;padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 12px rgba(0,0,0,.35)';
+
+    var msg = document.createElement('span');
+    msg.style.flex = '1';
+    msg.textContent = t[0];
+
+    var copyBtn = document.createElement('button');
+    copyBtn.style.cssText = 'flex-shrink:0;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.45);padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap';
+    copyBtn.textContent = t[1];
+
+    var closeBtn = document.createElement('button');
+    closeBtn.style.cssText = 'flex-shrink:0;background:none;border:none;color:rgba(255,255,255,.85);font-size:22px;line-height:1;cursor:pointer;padding:0 2px';
+    closeBtn.textContent = 'x';
+    closeBtn.addEventListener('click', function () { banner.remove(); });
+
+    banner.appendChild(msg);
+    banner.appendChild(copyBtn);
+    banner.appendChild(closeBtn);
+    document.body.insertBefore(banner, document.body.firstChild);
+
+    copyBtn.addEventListener('click', function () {
+        function done() { copyBtn.textContent = t[2]; setTimeout(function () { copyBtn.textContent = t[1]; }, 2000); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(done).catch(fallback);
+        } else { fallback(); }
+        function fallback() {
+            var ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (e) {}
+            document.body.removeChild(ta);
+        }
+    });
+}());
+</script>
+
 <!-- Language Switcher -->
 <div class="lang-switcher" role="navigation" aria-label="Language selector">
   <button class="lang-btn active" id="btn-es" onclick="setLang('es')" aria-label="Español">🇪🇸 ES</button>
@@ -332,6 +391,6 @@
 
 <!-- ══════════ JS ══════════ -->
 <script src="js/data.js?v=6"></script>
-<script src="js/main.js?v=35"></script>
+<script src="js/main.js?v=36"></script>
 </body>
 </html>
