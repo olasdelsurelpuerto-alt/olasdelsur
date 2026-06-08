@@ -7,3 +7,5 @@ test_*.js
 !css/assets/*.png
 .env
 .env.local
+__pycache__/
+*.pyc
