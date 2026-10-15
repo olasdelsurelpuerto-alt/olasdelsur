@@ -4,6 +4,7 @@ screenshot*.js
 test_*.js
 *.png
 !logo.png
+!icons/*.png
 !css/assets/*.png
 .env
 .env.local
