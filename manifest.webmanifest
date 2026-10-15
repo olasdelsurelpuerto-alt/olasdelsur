@@ -1,15 +1,36 @@
 {
+  "id": "/olasdelsur/",
   "name": "OlasDelSur — El Puerto",
   "short_name": "OlasDelSur",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/olasdelsur/",
+  "scope": "/olasdelsur/",
   "display": "standalone",
   "background_color": "#fce8cd",
   "theme_color": "#1a1a2e",
   "icons": [
-    { "src": "icons/icon-any-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-any-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-any-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-any-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
