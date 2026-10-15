@@ -11,13 +11,15 @@
   <title>OlasDelSur — El Puerto de Santa María</title>
   <meta name="description" content="OlasDelSur Airbnb — Avenida de la Bajamar 88, El Puerto de Santa María. Playas, gastronomía, vida nocturna y cultura al alcance de tu mano.">
   <link rel="icon" href="logo.webp" type="image/webp">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="apple-touch-icon" href="icons/icon-any-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1a1a2e">
 
   <!-- Font self-hosted (niente IP del visitatore verso Google) -->
   <link rel="stylesheet" href="fonts.css">
 
   <!-- Content Security Policy -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.umami.is https://www.youtube.com https://www.youtube-nocookie.com; worker-src blob:; connect-src 'self' https://*.umami.is https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://fonts.openmaptiles.org; font-src 'self' https://fonts.openmaptiles.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; frame-src https://www.youtube-nocookie.com; media-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.umami.is https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self' blob:; manifest-src 'self'; connect-src 'self' https://*.umami.is https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com https://fonts.openmaptiles.org; font-src 'self' https://fonts.openmaptiles.org; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; frame-src https://www.youtube-nocookie.com; media-src 'self';">
   <!-- MapLibre self-hosted (niente unpkg: no supply-chain, no IP-leak) -->
   <link rel="stylesheet" href="vendor/maplibre-gl.css">
   <script src="vendor/maplibre-gl.js"></script>
@@ -392,5 +394,6 @@
 <!-- ══════════ JS ══════════ -->
 <script src="js/data.js?v=6"></script>
 <script src="js/main.js?v=36"></script>
+<script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>
