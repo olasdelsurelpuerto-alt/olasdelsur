@@ -9,7 +9,7 @@ Sito statico multilingua (es/en/fr/de/it) per esplorare El Puerto de Santa Marí
 - `js/main.js`: mappa MapLibre, filtri, schede, lingue e video.
 - `css/style.css` e `fonts.css`: stile e font locali.
 - `vendor/`: libreria MapLibre locale.
-- `assets/`, `icons/`, `logo.webp`: video, poster e icone PWA.
+- `assets/`, `icons/`, `logo.webp`: video, immagini e icone PWA.
 - `manifest.webmanifest` e `sw.js`: installazione e copia offline dell'interfaccia. Le tile della mappa richiedono una connessione.
 
 ## Modifiche e pubblicazione
@@ -18,4 +18,4 @@ Modificare i luoghi in `js/data.js` e i testi statici in `index.html`. Le coordi
 
 ## Privacy
 
-OlasDelSur, proprietario dell'alloggio, usa analisi anonime senza cookie tramite Umami Cloud. Le mappe base sono fornite da CARTO/OpenStreetMap. Il video YouTube usa `youtube-nocookie.com` e viene caricato solo dopo il clic. La nota è presente nel footer in tutte le lingue.
+OlasDelSur, proprietario dell'alloggio, usa analisi anonime senza cookie tramite Umami Cloud. Le mappe base sono fornite da CARTO/OpenStreetMap. La pagina incorpora un video YouTube tramite `youtube-nocookie.com`. La nota è presente nel footer in tutte le lingue.

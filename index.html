@@ -109,12 +109,11 @@
 
   <!-- ── Cinematic native video background ── -->
   <div class="hero-bg-wrap" aria-hidden="true">
-    <video muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg" class="hero-bg-video">
+    <video autoplay muted loop playsinline class="hero-bg-video">
       <source src="assets/atmosfera_01_720p.mp4" type="video/mp4">
     </video>
     <div class="hero-slide-overlay"></div>
   </div><!-- /hero-bg-wrap -->
-  <button type="button" class="video-toggle hero-video-toggle" data-video=".hero-bg-video" aria-label="Pausar vídeo / Pause video">⏸</button>
 
   <!-- Electric flicker overlay (covers full hero including logo) -->
   <div class="hero-flicker-layer" id="heroFlicker"></div>
@@ -266,10 +265,16 @@
     </div>
     <div class="atm-video-frame">
       <div id="atmYTPlayer"></div>
+      <!-- Invisible shield: blocks all clicks on the YouTube iframe -->
+      <div id="videoShield" class="atm-video-shield"></div>
       <!-- Start overlay: scenic image + play button -->
-      <button type="button" class="video-overlay" id="videoOverlay" onclick="startCinematicVideo()" aria-label="Reproducir vídeo / Play video">
-        <span class="red-play-btn" aria-hidden="true"></span>
-      </button>
+      <div class="video-overlay" id="videoOverlay" onclick="startCinematicVideo()" role="button" tabindex="0" aria-label="Reproducir vídeo / Play video">
+        <div class="red-play-btn"></div>
+      </div>
+      <!-- End overlay: scenic image when video is about to end -->
+      <div class="video-end-overlay" id="videoEndOverlay">
+        <div class="video-end-scenic"></div>
+      </div>
     </div>
     <div class="atmosphere-bar">
       <span class="atmosphere-bar-line"></span>
@@ -339,10 +344,9 @@
       <div class="sherry-video-wrapper" style="position: relative; width: 100%; max-width: 260px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 4px solid rgba(255,255,255,0.2); overflow: hidden;">
         
         <!-- The Video -->
-        <video class="sherry-video" loop muted playsinline preload="none" poster="assets/boat-poster.jpg" style="width: 100%; height: 460px; object-fit: cover; display: block;">
-          <source data-src="css/assets/sherry-boat-video-h264.mp4" type="video/mp4">
+        <video class="sherry-video" autoplay loop muted playsinline style="width: 100%; height: 460px; object-fit: cover; display: block;">
+          <source src="css/assets/sherry-boat-video-h264.mp4" type="video/mp4">
         </video>
-        <button type="button" class="video-toggle sherry-video-toggle" data-video=".sherry-video" aria-label="Riproduci video / Play video">▶</button>
         
         <!-- The Logo and CTA linked to Instagram -->
         <a href="https://www.instagram.com/sherryboatco?igsh=MXZiY2JhNGQ3ZHk5OQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" class="sherry-logo-link" data-umami-event="click-booking-sherry" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 25px 0; text-decoration: none;">
@@ -386,11 +390,11 @@
 
   <p class="footer-copy">© 2026 OlasDelSur · Avenida de la Bajamar 88 · El Puerto de Santa María, Cádiz, España</p>
   <p class="footer-copy footer-privacy">
-    <span data-lang="es">Privacidad: OlasDelSur (propietario del alojamiento) usa analítica anónima sin cookies de Umami Cloud. Mapa base de CARTO/OpenStreetMap; vídeo de YouTube (nocookie) solo al hacer clic.</span>
-    <span data-lang="en">Privacy: OlasDelSur (the accommodation owner) uses anonymous cookieless Umami Cloud analytics. Base map by CARTO/OpenStreetMap; YouTube video (nocookie) loads only on click.</span>
-    <span data-lang="fr">Confidentialité : OlasDelSur (propriétaire du logement) utilise les statistiques anonymes sans cookies d’Umami Cloud. Fond de carte CARTO/OpenStreetMap ; vidéo YouTube (nocookie) chargée au clic.</span>
-    <span data-lang="de">Datenschutz: OlasDelSur (Eigentümer der Unterkunft) nutzt anonyme, cookiefreie Analyse von Umami Cloud. Basiskarte von CARTO/OpenStreetMap; YouTube-Video (nocookie) erst nach Klick.</span>
-    <span data-lang="it">Privacy: OlasDelSur (proprietario dell’alloggio) usa analisi anonime senza cookie di Umami Cloud. Mappa base CARTO/OpenStreetMap; video YouTube (nocookie) solo al clic.</span>
+    <span data-lang="es">Privacidad: OlasDelSur (propietario del alojamiento) usa analítica anónima sin cookies de Umami Cloud. Mapa base de CARTO/OpenStreetMap; vídeo incrustado de YouTube (nocookie).</span>
+    <span data-lang="en">Privacy: OlasDelSur (the accommodation owner) uses anonymous cookieless Umami Cloud analytics. Base map by CARTO/OpenStreetMap; embedded YouTube video (nocookie).</span>
+    <span data-lang="fr">Confidentialité : OlasDelSur (propriétaire du logement) utilise les statistiques anonymes sans cookies d’Umami Cloud. Fond de carte CARTO/OpenStreetMap ; vidéo YouTube intégrée (nocookie).</span>
+    <span data-lang="de">Datenschutz: OlasDelSur (Eigentümer der Unterkunft) nutzt anonyme, cookiefreie Analyse von Umami Cloud. Basiskarte von CARTO/OpenStreetMap; eingebettetes YouTube-Video (nocookie).</span>
+    <span data-lang="it">Privacy: OlasDelSur (proprietario dell’alloggio) usa analisi anonime senza cookie di Umami Cloud. Mappa base CARTO/OpenStreetMap; video YouTube incorporato (nocookie).</span>
   </p>
 
 
