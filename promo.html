@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OlasDelSur Promo</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sand: #fcecd2;
+            --coral: #FF6B35;
+            --ocean: #0096A6;
+            --gold: #F2A30F;
+            --white: #ffffff;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .promo-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            animation: slide-sequence 24s infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.1);
+            animation: ken-burns 6s linear forwards;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 100%);
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: var(--white);
+            max-width: 80%;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fade-up 1s 0.5s forwards;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--sand);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fade-up 1s 1.2s forwards;
+        }
+
+        .highlight {
+            color: var(--coral);
+            font-style: italic;
+        }
+
+        @keyframes slide-sequence {
+            0%, 25% { opacity: 1; visibility: visible; }
+            24% { opacity: 1; }
+            25% { opacity: 0; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        .slide:nth-child(1) { animation-delay: 0s; }
+        .slide:nth-child(2) { animation-delay: 6s; }
+        .slide:nth-child(3) { animation-delay: 12s; }
+        .slide:nth-child(4) { animation-delay: 18s; }
+
+        @keyframes ken-burns {
+            from { transform: scale(1.1); }
+            to { transform: scale(1.0); }
+        }
+
+        @keyframes fade-up {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slide specific styles */
+        .slide:nth-child(1) .slide-bg { background-image: url('assets/promo_hero_drone_view_1774801703561.png'); }
+        .slide:nth-child(2) .slide-bg { background-image: url('assets/promo_luxury_sherry_tasting_1774801732154.png'); }
+        .slide:nth-child(3) .slide-bg { background-image: url('assets/promo_andalusian_street_scene_1774801745864.png'); }
+        .slide:nth-child(4) .slide-bg { background-image: url('assets/promo_lifestyle_sailing_bay_1774802168665.png'); }
+
+        .logo-tag {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 10;
+            color: var(--sand);
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="promo-container">
+        <div class="logo-tag">OLAS DEL SUR</div>
+        
+        <div class="slide">
+            <div class="slide-bg"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="subtitle">Experience the Atlantic</div>
+                <div class="title">Luxury <span class="highlight">Oceanside</span> Living</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-bg"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="subtitle">Authentic Flavours</div>
+                <div class="title">The Heart of <span class="highlight">Sherry</span> Country</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-bg"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="subtitle">Historic Charm</div>
+                <div class="title">Wander the <span class="highlight">Ancient</span> Streets</div>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="slide-bg"></div>
+            <div class="overlay"></div>
+            <div class="content">
+                <div class="subtitle">Unforgettable Nights</div>
+                <div class="title">Magic Under the <span class="highlight">Stars</span></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

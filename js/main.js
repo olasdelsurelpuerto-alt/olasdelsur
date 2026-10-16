@@ -5,7 +5,6 @@ document.head.appendChild(tag);
 
 var atmPlayer;
 var videoHasStarted = false;
-const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function onYouTubeIframeAPIReady() {
     atmPlayer = new YT.Player('atmYTPlayer', {
@@ -25,7 +24,7 @@ function onYouTubeIframeAPIReady() {
             onStateChange: function(e) {
                 var startOverlay = document.getElementById('videoOverlay');
                 var endOverlay = document.getElementById('videoEndOverlay');
-
+                
                 if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
                     // Fade out the start overlay after 4s
                     setTimeout(function() {
@@ -50,11 +49,11 @@ function onYouTubeIframeAPIReady() {
 function startCinematicVideo() {
     if (videoHasStarted) return; // Block restart
     videoHasStarted = true;
-
+    
     // Show the shield to block all clicks
     var shield = document.getElementById('videoShield');
     if (shield) shield.classList.add('active');
-
+    
     if (atmPlayer && atmPlayer.playVideo) {
         atmPlayer.unMute();
         atmPlayer.setVolume(100);
@@ -70,13 +69,6 @@ function startAtmosphereAudioOnce(btn) {
         umami.track('click-play-atmosphere-video');
     }
 }
-
-document.getElementById('videoOverlay')?.addEventListener('keydown', function(event) {
-    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
-        event.preventDefault();
-        startCinematicVideo();
-    }
-});
 
 // ── Map Setup (MapLibre GL 3D) ──
 let map;
@@ -130,7 +122,7 @@ function stopAutoRotate() {
 }
 
 function startPanoramicFly() {
-    if (_revealed || !map || prefersReducedMotion) return;
+    if (_revealed || !map) return;
     _revealed = true;
     _flyoverActive = true;
     let step = 0;
@@ -192,8 +184,6 @@ class DarkModeControl {
         const btn = document.createElement('button');
         btn.id = 'map-darkmode-btn';
         btn.title = 'Mappa scura / Dark map';
-        btn.type = 'button';
-        btn.setAttribute('aria-label', 'Attiva mappa scura / Toggle dark map');
         btn.textContent = '🌙';
         btn.style.cssText = 'font-size:15px;width:29px;height:29px;cursor:pointer;background:white;border:none;line-height:1;';
         btn.onclick = toggleMapStyle;
@@ -206,7 +196,7 @@ class DarkModeControl {
 function toggleMapStyle() {
     _mapDark = !_mapDark;
     const btn = document.getElementById('map-darkmode-btn');
-    if (btn) { btn.textContent = _mapDark ? '☀️' : '🌙'; btn.style.background = _mapDark ? '#1a1a2e' : 'white'; btn.setAttribute('aria-label', _mapDark ? 'Attiva mappa chiara / Toggle light map' : 'Attiva mappa scura / Toggle dark map'); }
+    if (btn) { btn.textContent = _mapDark ? '☀️' : '🌙'; btn.style.background = _mapDark ? '#1a1a2e' : 'white'; }
     document.querySelector('.map-section')?.classList.toggle('dark-map', _mapDark);
     map.setStyle(_mapDark ? MAP_STYLES.dark : MAP_STYLES.light);
 }
@@ -242,9 +232,6 @@ function initMap() {
         bearing: 0
     });
 
-    map.on('error', () => { if (!navigator.onLine) document.getElementById('map-offline').hidden = false; });
-    window.addEventListener('offline', () => { document.getElementById('map-offline').hidden = false; });
-    window.addEventListener('online', () => { document.getElementById('map-offline').hidden = true; });
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
     map.addControl(new DarkModeControl(), 'top-left');
 
@@ -254,8 +241,9 @@ function initMap() {
         _mapLoaded = true;
         applyStyleLayers();
         renderMarkers();
+        initCardClicks();
         injectDistances();
-        if (_mapVisible && !prefersReducedMotion) startPanoramicFly();
+        if (_mapVisible) startPanoramicFly();
     });
 
     // Re-apply custom layers after every style change (dark/light toggle)
@@ -299,9 +287,8 @@ function makeMarkerEl(emoji, color, isHome) {
     el.style.cssText = `line-height:0;${isHome ? 'z-index:9999;' : ''}`;
 
     // inner is the visual circle — safe to animate independently
-    const inner = document.createElement('button');
-    inner.type = 'button';
-    inner.textContent = emoji;
+    const inner = document.createElement('div');
+    inner.innerHTML = emoji;
     inner.style.cssText = `width:${s}px;height:${s}px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:${fs}px;border:2px solid white;box-shadow:0 0 14px ${color};cursor:pointer;transition:transform 0.15s;`;
     inner.addEventListener('mouseenter', () => { inner.style.transform = 'scale(1.15)'; });
     inner.addEventListener('mouseleave', () => { inner.style.transform = ''; });
@@ -316,9 +303,8 @@ function renderMarkers() {
         const isHome = p.category === 'home';
         const color = categoryColors[p.category] || '#08D9D6';
         const el = makeMarkerEl(p.icon, color, isHome);
-        el.querySelector('button').setAttribute('aria-label', (p['name_' + (window._olasLang || 'es')] || p.title) + ' — abrir lugar / open place');
         const popup = new maplibregl.Popup({ offset: [0, isHome ? -28 : -22], maxWidth: '230px' });
-        popup.on('open', () => popup.setDOMContent(renderPopup(p)));
+        popup.on('open', () => popup.setHTML(renderPopup(p)));
         const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
             .setLngLat([p.lng, p.lat]).setPopup(popup).addTo(map);
         mapMarkers[p.id] = { marker, place: p };
@@ -327,7 +313,7 @@ function renderMarkers() {
                 umami.track('click-map-marker', { poi: p.id, category: p.category });
             }
             stopAutoRotate();
-            map.flyTo({ center: [p.lng, p.lat], zoom: 16, pitch: prefersReducedMotion ? 0 : 60, duration: prefersReducedMotion ? 0 : 2000 });
+            map.flyTo({ center: [p.lng, p.lat], zoom: 16, pitch: 60, duration: 2000 });
             highlightCard(p.id);
         });
     });
@@ -335,50 +321,36 @@ function renderMarkers() {
 
 function renderPopup(p) {
     const lang = window._olasLang || 'es';
-    const record = poiData.find(x => x.id === p.id) || p;
-    const title = record['name_' + lang] || record.name || p.title;
-    const desc = record['desc_' + lang] || record.desc_es || '';
-    const el = document.createElement('div');
-    el.className = 'map-popup';
-    const heading = document.createElement('strong');
-    heading.textContent = title;
-    el.appendChild(heading);
+    const pData = typeof poiData !== 'undefined' ? poiData.find(x => x.id === p.id) : null;
+    let title = pData ? (pData['name_' + lang] || pData.name || p.title) : p.title;
+    let desc  = pData ? (pData['desc_' + lang] || pData.desc_es || p.desc) : (p['desc_' + lang] || p.desc);
+
+    const btnLabels = { es: '🚶 Cómo llegar', en: '🚶 Directions', fr: '🚶 Itinéraire', de: '🚶 Wegbeschreibung', it: '🚶 Come arrivarci' };
+    const scheduleLabels = { es: '🕐 Ver horarios', en: '🕐 Timetable', fr: '🕐 Horaires', de: '🕐 Fahrplan', it: '🕐 Orari' };
+    const walkLabels = { es: 'a pie', en: 'walk', fr: 'à pied', de: 'zu Fuß', it: 'a piedi' };
+
+    const mapsLink = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${p.lat},${p.lng}&travelmode=walking`;
+    const btnStyle = `display:inline-block;color:white;padding:5px 12px;border-radius:20px;text-decoration:none;font-weight:bold;font-size:0.78rem;`;
+    const scheduleBtn = p.id === 'catamaran'
+        ? `<a href="https://www.google.com/maps/place/Terminal+Mar%C3%ADtima+El+Puerto/@36.5936483,-6.2268356,18z/data=!4m8!3m7!1s0xd0dcfc34903c125:0xc5cfcba5b149cff2!6m1!1v9!8m2!3d36.593778!4d-6.226493!16s%2Fg%2F11fqscvq1h" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#1D4ED8;">${scheduleLabels[lang] || scheduleLabels.es}</a>`
+        : '';
+    const btnHtml = p.id === 'home' ? '' : `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;"><a href="${mapsLink}" target="_blank" rel="noopener noreferrer" data-umami-event="click-route-google-maps" data-umami-event-poi="${p.id}" style="${btnStyle}background:var(--coral,#E8501A);">${btnLabels[lang] || btnLabels.es}</a>${scheduleBtn}</div>`;
+
+    let walkHtml = '';
     if (p.id !== 'home') {
         const walk = calcWalk(p.lat, p.lng);
-        const distance = document.createElement('div');
-        distance.className = 'popup-distance';
-        distance.textContent = `🚶 ${walk.mins} min · ${walk.distStr}`;
-        el.appendChild(distance);
+        walkHtml = `<style>@keyframes wfade{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}</style><div style="display:inline-flex;align-items:center;gap:5px;margin:4px 0 8px;padding:3px 10px;border-radius:20px;background:rgba(232,80,26,0.1);border:1px solid rgba(232,80,26,0.25);animation:wfade 0.5s ease;"><span style="font-size:0.8rem;">🚶</span><span style="font-size:0.8rem;font-weight:700;color:#E8501A;">${walk.mins} min</span><span style="font-size:0.75rem;color:#888;">· ${walk.distStr} ${walkLabels[lang] || 'walk'}</span></div>`;
     }
-    const description = document.createElement('p');
-    description.textContent = desc;
-    el.appendChild(description);
-    if (p.id !== 'home') {
-        const actions = document.createElement('div');
-        actions.className = 'popup-actions';
-        const route = document.createElement('a');
-        route.href = `https://www.google.com/maps/dir/?api=1&origin=36.588769,-6.231999&destination=${p.lat},${p.lng}&travelmode=walking`;
-        route.target = '_blank'; route.rel = 'noopener noreferrer';
-        route.textContent = ({es:'🚶 Cómo llegar',en:'🚶 Directions',fr:'🚶 Itinéraire',de:'🚶 Wegbeschreibung',it:'🚶 Come arrivarci'})[lang];
-        actions.appendChild(route);
-        if (p.id === 'catamaran') {
-            const schedule = document.createElement('a');
-            schedule.href = 'https://siu.cmtbc.es/es/horarios_lineas_tabla.php?linea=15';
-            schedule.target = '_blank'; schedule.rel = 'noopener noreferrer';
-            schedule.textContent = ({es:'🕐 Ver horarios',en:'🕐 Timetable',fr:'🕐 Horaires',de:'🕐 Fahrplan',it:'🕐 Orari'})[lang];
-            actions.appendChild(schedule);
-        }
-        el.appendChild(actions);
-    }
-    return el;
+    return `<div style="font-family:sans-serif;padding:2px 18px 2px 2px"><strong style="font-size:0.88rem;line-height:1.2;display:block;margin-bottom:2px;">${title}</strong>${walkHtml}<div style="font-size:0.78rem;line-height:1.3;color:#333;">${desc}</div>${btnHtml}</div>`;
 }
+
 
 function highlightCard(id) {
     document.querySelectorAll('.poi-card').forEach(c => c.classList.remove('active'));
     const card = document.getElementById('card-' + id);
     if (card) {
         card.classList.add('active');
-        card.scrollIntoView({ behavior: prefersReducedMotion ? 'instant' : 'smooth', block:'nearest' });
+        card.scrollIntoView({ behavior:'smooth', block:'nearest' });
     }
 }
 
@@ -397,7 +369,7 @@ function initCardClicks() {
                 if (m.marker.getPopup().isOpen()) m.marker.togglePopup();
             });
             highlightCard(id);
-            map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), duration: prefersReducedMotion ? 0 : 700, essential: !prefersReducedMotion });
+            map.flyTo({ center: [place.lng, place.lat], zoom: Math.max(map.getZoom(), 15), duration: 700, essential: true });
             setTimeout(() => { if (!marker.getPopup().isOpen()) marker.togglePopup(); }, 500);
         });
     });
@@ -424,31 +396,21 @@ function filterMapMarkers(cat) {
     });
 }
 
-function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function safeExternalUrl(value) {
-    try { const url = new URL(value); return ['https:', 'http:'].includes(url.protocol) ? escapeHtml(url.href) : '#'; }
-    catch { return '#'; }
-}
-
 // ── POI Explorer ──
 function renderPoiChips(filter) {
     const lang = window._olasLang || 'es';
     const container = document.getElementById('poiChips');
     if (!container) return;
     const filtered = filter === 'all' ? poiData : poiData.filter(p => p.cat === filter);
-    container.replaceChildren(...filtered.map(p => {
-        const button = document.createElement('button');
-        button.type = 'button'; button.className = 'poi-chip'; button.dataset.id = p.id;
-        const emoji = document.createElement('span'); emoji.className = 'poi-chip-emoji'; emoji.textContent = p.emoji;
-        const info = document.createElement('span'); info.className = 'poi-chip-info';
-        const name = document.createElement('span'); name.className = 'poi-chip-name'; name.textContent = p['name_' + lang] || p.name;
-        const category = document.createElement('span'); category.className = 'poi-chip-cat'; category.style.color = catColors[p.cat] || '#888'; category.textContent = p['badge_' + lang] || p.badge_es;
-        info.append(name, category); button.append(emoji, info);
-        button.addEventListener('click', () => showPoiDetail(p.id));
-        return button;
-    }));
+    container.innerHTML = filtered.map(p => `
+      <div class="poi-chip" data-id="${p.id}" onclick="showPoiDetail('${p.id}')">
+        <span class="poi-chip-emoji">${p.emoji}</span>
+        <div class="poi-chip-info">
+          <div class="poi-chip-name">${p.name}</div>
+          <div class="poi-chip-cat" style="color:${catColors[p.cat]||'#888'}">${p['badge_'+lang]||p.badge_es}</div>
+        </div>
+      </div>
+    `).join('');
 }
 
 function showPoiDetail(id) {
@@ -485,31 +447,28 @@ function showPoiDetail(id) {
     let html = `
       <div class="poi-detail-header">
         <span class="poi-detail-emoji">${p.emoji}</span>
-        <h3 class="poi-detail-name"></h3>
-        <span class="poi-detail-cat-badge"></span>
+        <h3 class="poi-detail-name">${p.name}</h3>
+        <span class="poi-detail-cat-badge">${p['badge_'+lang]||p.badge_es}</span>
       </div>
       <div class="poi-detail-body">
-        <p class="poi-detail-desc"></p>
+        <p class="poi-detail-desc">${p['desc_'+lang]||p.desc_es||''}</p>
         <div class="poi-detail-info">
     `;
     
     if (p.address) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">📍</span><div class="poi-detail-row-text">${escapeHtml(p.address)}</div></div>`;
+        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">📍</span><div class="poi-detail-row-text">${p.address}</div></div>`;
     }
     if (p.hours_es) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🕒</span><div class="poi-detail-row-text">${escapeHtml(p['hours_'+lang]||p.hours_es)}</div></div>`;
+        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🕒</span><div class="poi-detail-row-text">${p['hours_'+lang]||p.hours_es}</div></div>`;
     }
     if (p.phone) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">📞</span><div class="poi-detail-row-text"><a href="tel:${p.phone.replace(/[^+\d]/g,'')}">${escapeHtml(p.phone)}</a></div></div>`;
+        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">📞</span><div class="poi-detail-row-text"><a href="tel:${p.phone.replace(/\s+/g,'')}">${p.phone}</a></div></div>`;
     }
-    if (p.whatsapp) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">💬</span><div class="poi-detail-row-text"><a href="https://wa.me/${p.whatsapp.replace(/[^\d]/g,'')}" target="_blank" rel="noopener noreferrer">WhatsApp</a></div></div>`;
-    }
-    if (p.www || p.link) {
-        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🌐</span><div class="poi-detail-row-text"><a href="${safeExternalUrl(p.www || p.link)}" target="_blank" rel="noopener noreferrer" style="color:var(--coral);text-decoration:none;font-weight:600;">${t.website}</a></div></div>`;
+    if (p.www) {
+        html += `<div class="poi-detail-row"><span class="poi-detail-row-icon">🌐</span><div class="poi-detail-row-text"><a href="${p.www}" target="_blank" rel="noopener noreferrer" style="color:var(--coral);text-decoration:none;font-weight:600;">${t.website}</a></div></div>`;
     }
     if (p.tips_es) {
-        html += `<div class="poi-detail-row" style="margin-top:8px;"><span class="poi-detail-row-icon">💡</span><div class="poi-detail-row-text"><strong>${t.tip}</strong> ${escapeHtml(p['tips_'+lang]||p.tips_es)}</div></div>`;
+        html += `<div class="poi-detail-row" style="margin-top:8px;"><span class="poi-detail-row-icon">💡</span><div class="poi-detail-row-text"><strong>${t.tip}</strong> ${p['tips_'+lang]||p.tips_es}</div></div>`;
     }
     
     html += `</div>`; // close poi-detail-info
@@ -527,9 +486,6 @@ function showPoiDetail(id) {
     
     html += `</div>`; // close poi-detail-body
     content.innerHTML = html;
-    content.querySelector('.poi-detail-name').textContent = p['name_' + lang] || p.name;
-    content.querySelector('.poi-detail-cat-badge').textContent = p['badge_' + lang] || p.badge_es;
-    content.querySelector('.poi-detail-desc').textContent = p['desc_' + lang] || p.desc_es || '';
 }
 
 // ── Language ──
@@ -577,7 +533,6 @@ function alignCtaBg() {
 
 // ── Listeners ──
 window.addEventListener('load', () => {
-    initCardClicks();
     initMap();
     renderPoiChips('all');
     alignCtaBg();
@@ -616,7 +571,6 @@ window.addEventListener('load', () => {
 (function() {
     var el = document.getElementById('heroFlicker');
     if (!el) return;
-    if (prefersReducedMotion) return;
     setInterval(() => {
         el.style.opacity = Math.random() > 0.9 ? 0.3 : 0;
     }, 2000);
