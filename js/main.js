@@ -1,31 +1,82 @@
-// Load YouTube only after a visitor chooses to play it.
-let atmPlayer;
-let videoHasStarted = false;
+// ── YouTube Iframe API Setup ──
+var tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+
+var atmPlayer;
+var videoHasStarted = false;
 const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function onYouTubeIframeAPIReady() {
     atmPlayer = new YT.Player('atmYTPlayer', {
-        videoId: '-zQbS5or5-k', host: 'https://www.youtube-nocookie.com',
-        playerVars: { controls: 1, cc_load_policy: 1, rel: 0, playsinline: 1, autoplay: 0 },
-        events: { onReady: event => { if (videoHasStarted) event.target.playVideo(); } }
+        videoId: '-zQbS5or5-k',
+        host: 'https://www.youtube-nocookie.com',
+        playerVars: {
+            controls: 0, rel: 0, modestbranding: 1,
+            iv_load_policy: 3, playsinline: 1,
+            autoplay: 0, disablekb: 1, fs: 0,
+            showinfo: 0
+        },
+        events: {
+            onReady: function(e) {
+                e.target.setPlaybackQuality('hd1080');
+                e.target.mute();
+            },
+            onStateChange: function(e) {
+                var startOverlay = document.getElementById('videoOverlay');
+                var endOverlay = document.getElementById('videoEndOverlay');
+
+                if (e.data === YT.PlayerState.PLAYING && videoHasStarted) {
+                    // Fade out the start overlay after 4s
+                    setTimeout(function() {
+                        if (startOverlay) startOverlay.classList.add('hidden');
+                    }, 4000);
+
+                    // Poll for the end of the video to show end overlay 1s early
+                    var checkEndInterval = setInterval(function() {
+                        var currentTime = e.target.getCurrentTime();
+                        var duration = e.target.getDuration();
+                        if (duration > 0 && (duration - currentTime) <= 1.2) { // 1.2s to ensure it's visible before black
+                            if (endOverlay) endOverlay.classList.add('visible');
+                            clearInterval(checkEndInterval);
+                        }
+                    }, 200);
+                }
+            }
+        }
     });
 }
 
 function startCinematicVideo() {
-    if (window._inAppBrowser) return;
+    if (videoHasStarted) return; // Block restart
     videoHasStarted = true;
-    document.getElementById('videoOverlay')?.classList.add('hidden');
-    if (atmPlayer) { atmPlayer.playVideo(); return; }
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
+
+    // Show the shield to block all clicks
+    var shield = document.getElementById('videoShield');
+    if (shield) shield.classList.add('active');
+
+    if (atmPlayer && atmPlayer.playVideo) {
+        atmPlayer.unMute();
+        atmPlayer.setVolume(100);
+        atmPlayer.playVideo();
+    }
 }
 
 function startAtmosphereAudioOnce(btn) {
+    if (window._inAppBrowser) return;
     startCinematicVideo();
     if (btn) btn.classList.add('fading');
-    if (typeof umami !== 'undefined') umami.track('click-play-atmosphere-video');
+    if (typeof umami !== 'undefined') {
+        umami.track('click-play-atmosphere-video');
+    }
 }
+
+document.getElementById('videoOverlay')?.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+        event.preventDefault();
+        startCinematicVideo();
+    }
+});
 
 // ── Map Setup (MapLibre GL 3D) ──
 let map;
@@ -584,34 +635,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 });
-
-// Native video controls; defer the lower video until it enters the viewport.
-function setupVideos() {
-    const boat = document.querySelector('.sherry-video');
-    const boatSource = boat?.querySelector('source[data-src]');
-    if (boat && boatSource) {
-        const loadBoat = () => {
-            boatSource.src = boatSource.dataset.src;
-            boatSource.removeAttribute('data-src');
-            boat.load();
-            if (!prefersReducedMotion) boat.play().catch(() => {});
-        };
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver(entries => {
-                if (entries.some(e => e.isIntersecting)) { loadBoat(); observer.disconnect(); }
-            }, { rootMargin: '100px' });
-            observer.observe(boat);
-        } else loadBoat();
-    }
-    if (!prefersReducedMotion) document.querySelector('.hero-bg-video')?.play().catch(() => {});
-    document.querySelectorAll('.video-toggle').forEach(button => {
-        button.addEventListener('click', () => {
-            const video = document.querySelector(button.dataset.video);
-            if (!video) return;
-            if (video.paused) video.play().catch(() => {}); else video.pause();
-            button.textContent = video.paused ? '▶' : '⏸';
-            button.setAttribute('aria-label', video.paused ? 'Riproduci video / Play video' : 'Pausa video / Pause video');
-        });
-    });
-}
-window.addEventListener('load', setupVideos);

@@ -1160,12 +1160,12 @@
 
     .atm-video-frame iframe {
       position: absolute;
-      top: 0;
+      top: -16.65%; /* Clipping top/bottom branding */
       left: 0;
       width: 100%;
-      height: 100%;
+      height: 133.3%;
       border: 0;
-      pointer-events: auto;
+      pointer-events: none;
     }
 
     /* Cinematic Play Button Overlay */
@@ -1191,6 +1191,52 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+    }
+
+    .video-overlay.ended {
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes.webp');
+    }
+
+    /* Invisible shield to block clicks on YouTube iframe */
+    .atm-video-shield {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 15;
+      pointer-events: none;
+      border-radius: 12px;
+    }
+    .atm-video-shield.active {
+      pointer-events: auto; /* Blocks all clicks once video starts */
+      cursor: default;
+    }
+
+    /* End overlay with OlasDelSur logo */
+    .video-end-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 1.2s ease, visibility 1.2s;
+      border-radius: 12px;
+    }
+    .video-end-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .video-end-scenic {
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../assets/promo_beachfront_evening_vibes.webp');
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
     }
 
     .red-play-btn {
@@ -1274,16 +1320,12 @@
 .popup-actions a { display: inline-block; background: #b83b16; color: white; padding: 5px 9px; border-radius: 14px; text-decoration: none; font-size: .76rem; font-weight: 700; }
 .popup-actions a + a { background: #164aad; }
 .map-offline { padding: 10px 16px; color: #57200f; background: #fff0d9; }
-.video-toggle { position: absolute; z-index: 30; border: 2px solid white; border-radius: 50%; background: rgba(25,25,30,.85); color: white; width: 40px; height: 40px; cursor: pointer; }
-.hero-video-toggle { right: 20px; bottom: 20px; }
-.sherry-video-toggle { right: 8px; bottom: 8px; }
-.video-overlay { border: 0; width: 100%; }
 @media (max-width: 420px) {
   .lang-switcher { left: 8px; right: auto; top: 8px; width: calc(100vw - 16px); max-width: calc(100vw - 16px); justify-content: center; flex-wrap: wrap; border-radius: 18px; }
   .lang-btn { padding: 5px 6px; font-size: .72rem; }
   .cta-content-wrapper > div { flex-basis: 100% !important; max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-  .fade-in, .atm-video-frame { opacity: 1 !important; transform: none !important; }
+  html { scroll-behavior: auto !important; }
+  .fade-in { opacity: 1 !important; transform: none !important; transition: none !important; }
 }

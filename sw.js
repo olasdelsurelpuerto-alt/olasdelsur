@@ -1,4 +1,4 @@
-const CACHE = 'olas-pwa-v2';
+const CACHE = 'olas-pwa-v3';
 const CORE = [
   './', './index.html', './css/style.css', './js/data.js', './js/main.js',
   './fonts.css', './vendor/maplibre-gl.js', './vendor/maplibre-gl.css',
