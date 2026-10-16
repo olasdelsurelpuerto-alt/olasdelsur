@@ -1,21 +1,18 @@
-# OlasDelSur — mappa per gli ospiti
+# 🌊 Olas Del Sur - Web Project
 
-Sito statico multilingua (es/en/fr/de/it) per esplorare El Puerto de Santa María. La mappa usa MapLibre GL JS locale e le mappe base CARTO/OpenStreetMap.
+Questo è il progetto web della Web App multilingua per gli ospiti di Olas Del Sur a El Puerto de Santa María.
 
-## Struttura
+## 📂 Struttura del Progetto
+- `index.html`: Struttura principale della pagina.
+- `css/style.css`: Design, colori e animazioni (Summer Palette).
+- `js/data.js`: Database dei luoghi (POI), spiagge, ristoranti e traduzioni.
+- `js/main.js`: Logica della mappa Leaflet, player YouTube e interazioni.
+- `assets/`: Immagini, video e icone.
 
-- `index.html`: pagina, testi dell'interfaccia e metadati social.
-- `js/data.js`: fonte unica dei 48 luoghi, con coordinate, descrizioni e orari nelle cinque lingue.
-- `js/main.js`: mappa MapLibre, filtri, schede, lingue e video.
-- `css/style.css` e `fonts.css`: stile e font locali.
-- `vendor/`: libreria MapLibre locale.
-- `assets/`, `icons/`, `logo.webp`: video, immagini e icone PWA.
-- `manifest.webmanifest` e `sw.js`: installazione e copia offline dell'interfaccia. Le tile della mappa richiedono una connessione.
+## 🛠️ Come fare modifiche
+1. **Aggiungere un luogo sulla mappa:** Apri `js/data.js` e aggiungi un oggetto all'array `places`.
+2. **Cambiare i colori:** Apri `css/style.css` e modifica le variabili in `:root`.
+3. **Modificare i testi:** I testi multilingua sono gestiti sia nell'HTML (tag `<span>` con `data-lang`) che in `js/data.js` per i punti interattivi.
 
-## Modifiche e pubblicazione
-
-Modificare i luoghi in `js/data.js` e i testi statici in `index.html`. Le coordinate dei marcatori derivano dai record dei luoghi. Controllare la sintassi con `node --check js/*.js sw.js` e verificare i percorsi locali citati da HTML, manifest e service worker. Pubblicare il branch scelto tramite GitHub Pages dalla radice del repository; non serve una build.
-
-## Privacy
-
-OlasDelSur, proprietario dell'alloggio, usa analisi anonime senza cookie tramite Umami Cloud. Le mappe base sono fornite da CARTO/OpenStreetMap. La pagina incorpora un video YouTube tramite `youtube-nocookie.com`. La nota è presente nel footer in tutte le lingue.
+---
+*Organizzato da Antigravity - Maggio 2026*

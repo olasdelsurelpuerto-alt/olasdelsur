@@ -1,0 +1,15 @@
+{
+  "project_name": "Olas Del Sur Web App",
+  "version": "1.0.0",
+  "author": "olasdelsur (via Antigravity)",
+  "type": "Technical / Marketing",
+  "stack": {
+    "frontend": "Vanilla HTML5/CSS3",
+    "maps": "Leaflet.js",
+    "video": "YouTube IFrame API"
+  },
+  "repository": "https://github.com/olasdelsurelpuerto-alt/olasdelsur",
+  "local_path": "~/Documenti/Second_Brain_Progetti/OlasDelSur_Web_Project",
+  "wiki_link": "[[Web_App_Olas_Del_Sur_Technical]]",
+  "last_digested": "2026-05-05"
+}

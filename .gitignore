@@ -2,6 +2,10 @@ node_modules/
 debug_*.js
 screenshot*.js
 test_*.js
+*.png
+!logo.png
+!icons/*.png
+!css/assets/*.png
 .env
 .env.local
 __pycache__/
